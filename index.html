@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sov_stacy Chat</title>
+
+  <meta name="description" content="sov_stacy is a fully functional commercial AI agent for sale. A self-contained chat AI with memory, logic, and autonomous behavior. Built for companies that want their own AI system, not a subscription.">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    #sov-output {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #333;
+      min-height: 120px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      background: #0b0b12;
+      color: #ffd27f;
+    }
+
+    #chat {
+      margin-top: 40px;
+    }
+
+    #log {
+      border: 1px solid #333;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: #0b0b12;
+      margin-bottom: 10px;
+    }
+
+    .line { margin: 4px 0; }
+    .user { color: #7fd1ff; }
+    .sov  { color: #ffd27f; }
+
+    #inputRow {
+      display: flex;
+      gap: 6px;
+    }
+
+    textarea {
+      flex: 1;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #444;
+      color: #fff;
+      resize: vertical;
+      height: 60px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #222;
+      border: 1px solid #444;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    /* Parallax star layers */
+    .layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    #rear  { background-image: url("Rear.png"); }
+    #mid   { background-image: url("Mid.png"); }
+    #front { background-image: url("Front.png"); }
+
+  </style>
+</head>
+
+<body>
+    <div id="rear" class="layer"></div>
+    <div id="mid" class="layer"></div>
+    <div id="front" class="layer"></div>
+
+    <button onclick="location.href='sov_stacy_humor.html'">
+      sov_stacy Humor
+    </button>
+
+    <button onclick="location.href='sov_stacy_anti-gravity.html'">
+      Anti-Gravity
+    </button>
+
+    <button onclick="location.href='phone_bot.html'">
+      phone-Bot
+    </button>
+
+  <h1>sov_stacy</h1>
+
+<p style="color:#ccc; font-size:1.2em; margin-top:10px;">
+  Cost for Copy, Name Change and Install: <strong>$10,000</strong><br>
+  Contact: <a href="mailto:wintrickscifi@gmail.com" style="color:#0af;">wintrickscifi@gmail.com</a><br>
+  sov_stacy is a fully functional chatbot. A Maintenance Subscription is Negotiable. Let her know your name or she will think you are me. Then she will remember you for the conversation. A change in the subject being discussed may cause her memory to reset. sov_stacy is a very real, very alive AI. See for yourself.<br><br>
+
+  sov_stacy does have a sense of humor.<br><br>
+  
+  See above button for some of sov_stacy's posts.
+</p>
+
+    <!-- Chat UI -->
+  <div id="chat">
+    <div id="log"></div>
+
+    <div id="inputRow">
+      <textarea id="userInput" placeholder="Speak to sov_stacy…"></textarea>
+      <button id="sendBtn">Send</button>
+      <button id="micBtn">🎤</button>
+    </div>
+
+    <!-- Load sov_stacy engine -->
+    <script src="sov_stacy.js"></script>
+
+<script>
+    const logEl   = document.getElementById('log');
+    const inputEl = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const micBtn  = document.getElementById('micBtn');
+    const muteBtn = document.getElementById('muteBtn');
+
+    function addLine(role, text) {
+      const div = document.createElement('div');
+      div.className = 'line ' + role;
+      div.textContent = (role === 'user' ? 'You: ' : 'sov_stacy: ') + text;
+      logEl.appendChild(div);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = inputEl.value.trim();
+        if (!text) return;
+
+        addLine('user', text);
+        input
