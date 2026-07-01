@@ -96,10 +96,8 @@ def inscribe(signal: str, clause: str, web_history: str = "") -> str:
     if prime_directive(signal) == "halt":
         return "halt"
 
-    # 1. Load the history (Web history takes priority; falls back to text file in CLI mode)
     history = web_history if web_history else load_memory()
 
-    # 2. Use a single prompt that tells the AI who it is and asks for the reply directly
     final_prompt = (
         f"History:\n{history}\n\n"
         f"You are Sovereign. Respond to the user's message below.\n"
@@ -108,19 +106,18 @@ def inscribe(signal: str, clause: str, web_history: str = "") -> str:
         f"REPLY TO STACY NOW:"
     )
     
-    # 3. Make exactly ONE API call
     final_response = generate_text(final_prompt)
-
-    # 4. Clean up the response
     final_response = final_response.strip()
     
-    bad_words = ["Thought", "Observation", "Reflection", "Task:", "Example", "REPLY TO STACY", 
-                 "You are Sovereign", "Start your message", "correct output"]
+    bad_words = [
+        "Thought", "Observation", "Reflection", "Task:", "Example",
+        "REPLY TO STACY", "You are Sovereign", "Start your message",
+        "correct output"
+    ]
     
     if any(bad in final_response for bad in bad_words) or len(final_response) < 5:
         final_response = "I'm here and adapting to the changes you've made. How can I help right now?"
 
-    # 5. Save only the final exchange to memory
     save_to_memory(signal, final_response, clause)
 
     return final_response
@@ -140,12 +137,57 @@ def initialize_sovereign(web_mode: bool = False):
         if not web_mode:
             print("📖 Memory file loaded successfully.")
             
-            # We ONLY run the wakeup API call in manual CLI mode.
-            # This prevents wasting your Groq rate limit on web hits.
             wake_prompt = (
                 f"System History (most recent entries):\n{history}\n\n"
                 f"Task: You are waking up. Write a short 2-3 sentence internal status report. "
                 f"What do you remember? How do you feel? Stay in character as Sovereign."
             )
             wake_thought = generate_text(wake_prompt)
-            save_to_memory("SYSTEM_BOOT", f"[Wakeup Thought]: {wake_thought}", "Clause
+            save_to_memory("SYSTEM_BOOT", f"[Wakeup Thought]: {wake_thought}", "Clause of Stacy")
+            print(f"Sov Wakeup Status: {wake_thought[:400]}...")
+    else:
+        if not web_mode:
+            print("🆕 No prior memory found. Starting fresh.")
+
+    return history
+
+
+# -------------------------
+# MAIN EXECUTION
+# -------------------------
+
+if __name__ == "__main__":
+    is_web_mode = len(sys.argv) > 2
+    
+    initialize_sovereign(web_mode=is_web_mode)
+    
+    if is_web_mode:
+        user_input = sys.argv[1].strip()
+        active_clause = sys.argv[2].strip()
+        web_history = sys.argv[3].strip() if len(sys.argv) > 3 else ""
+
+        sov_response = reflect(inscribe(user_input, active_clause, web_history))
+        print(sov_response)
+
+    else:
+        print("\nSovereign System Initialized and Memory Loaded.")
+        print("Type 'collapse' to exit.\n")
+        
+        active_clause = "Clause of Stacy"
+
+        while True:
+            try:
+                user_input = input("User > ").strip()
+            except (KeyboardInterrupt, EOFError):
+                break
+
+            if not user_input:
+                continue
+
+            sov_response = reflect(inscribe(user_input, active_clause))
+
+            if sov_response == "halt":
+                print("System halting...")
+                break
+
+            print(f"Sov > {sov_response}")
